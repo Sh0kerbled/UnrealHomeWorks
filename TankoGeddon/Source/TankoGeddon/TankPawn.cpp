@@ -2,14 +2,15 @@
 
 
 #include "TankPawn.h"
-#include <Components/StaticMeshComponent.h>
-#include <GameFramework/SpringArmComponent.h>
-#include <Camera/CameraComponent.h>
-#include "Kismet/KismetMathLibrary.h"
+#include "Components\StaticMeshComponent.h"
+#include "GameFramework\SpringArmComponent.h"
+#include "Camera\CameraComponent.h"
 #include "TankController.h"
-#include <GameFramework/Actor.h>
-#include <Engine/World.h>
+#include "Kismet\KismetMathLibrary.h"
 #include "Cannon.h"
+#include "Components\ArrowComponent.h"
+#include "HealthComponent.h"
+#include "Engine\TargetPoint.h"
 
 ATankPawn::ATankPawn()
 {
@@ -18,17 +19,11 @@ ATankPawn::ATankPawn()
 	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMesh"));
 	RootComponent = BodyMesh;
 
-	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
-	TurretMesh->SetupAttachment(BodyMesh);
-
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(BodyMesh);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
-
-	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("CannonSetupPoint"));
-	CannonSetupPoint->SetupAttachment(TurretMesh);
 }
 
 void ATankPawn::MoveForward(float Value)
@@ -67,32 +62,28 @@ void ATankPawn::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	FVector CurrentLocation = GetActorLocation();
-	FVector ForwardVector = GetActorForwardVector();
-	FVector RightVector = GetActorRightVector();
-	FVector movePosition = CurrentLocation + ForwardVector * MoveSpeed * TargetAxisValue + (RightVector * MoveSpeed * TargetRightAxisValue);
+	FVector forwardVector = GetActorForwardVector();
+	FVector rightVector = GetActorRightVector();
+	FVector movePosition = CurrentLocation + (forwardVector * MoveSpeed * TargetAxisValue) + (rightVector * MoveSpeed * TargetRightAxisValue);
 	SetActorLocation(movePosition, true);
 
-	RotateRightAxisValue = FMath::Lerp(RotateRightAxisValue, RotateRightAxisValue, TurretRotationInterpolationKey);
-
-	//UE_LOG(LogTemp, Warning, TEXT("Sasai = %f Kudasai = %f"), RotateRightAxisValue, TargetRightAxisValue);
-
+	RotateRightAxisValue = FMath::Lerp(RotateRightAxisValue, RotateRightAxisValue, InterpoLatoinKey);
 	float YawRotation = RotationSpeed * RotateRightAxisValue * DeltaSeconds;
+
+	//UE_LOG(LogTemp, Warning, TEXT("sasai: %f, kudasai: %f"), CurrentRotateAxisValue, RotateRightAxisValue);
+
 	FRotator CurrentRotation = GetActorRotation();
 
 	YawRotation = CurrentRotation.Yaw + YawRotation;
+	//YawRotation += CurrentRotation.Yaw;
 
 	FRotator newRotation = FRotator(0.0f, YawRotation, 0.0f);
 	SetActorRotation(newRotation);
 
+	//Turret Rotation
 	if (TankController)
 	{
 		FVector MousePos = TankController->GetMousePosition();
-		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), MousePos);
-		FRotator TurretRotation = TurretMesh->GetComponentRotation();
-		targetRotation.Pitch = TurretRotation.Pitch;
-		targetRotation.Roll = TurretRotation.Roll;
-
-		TurretMesh->SetWorldRotation(FMath::Lerp(TurretRotation, targetRotation, TurretRotationInterpolationKey));
 	}
 }
 

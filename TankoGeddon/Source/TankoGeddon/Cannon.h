@@ -20,6 +20,7 @@ public:
 	void Reload();
 	void FireSpecial();
 	void ChangeGun();
+	bool IsReadyToFire() { return bCanFire; };
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
@@ -35,7 +36,7 @@ protected:
 	float ReloadTime = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunAmmo")
-	int32 Nuclei = 10;
+	int32 Nuclei = 99;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunAmmo")
 	int32 BST = 5;

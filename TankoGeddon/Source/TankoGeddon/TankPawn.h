@@ -6,6 +6,10 @@
 #include "GameFramework/Pawn.h"
 #include "TankController.h"
 #include <Components\ArrowComponent.h>
+#include <Components/BoxComponent.h>
+#include "DamageTaker.h"
+#include "GameStruct.h"
+#include "HealthComponent.h"
 #include "TankPawn.generated.h"
 
 class ACannon;
@@ -39,11 +43,8 @@ public:
 	virtual void BeginPlay() override;
 
 protected:
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 		UStaticMeshComponent* BodyMesh;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		UStaticMeshComponent* TurretMesh;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		class USpringArmComponent* SpringArm;
@@ -59,6 +60,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret | Component")
 	class UArrowComponent* CannonSetupPoint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HitBox")
+	class UBoxComponent* BoxComponent;
 
 	UPROPERTY()
 	ACannon* Cannon;

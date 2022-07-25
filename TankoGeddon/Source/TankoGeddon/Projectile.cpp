@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include <Components/SceneComponent.h>
 #include <Components/StaticMeshComponent.h>
+#include "DamageTaker.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -33,6 +34,26 @@ void AProjectile::Move()
 void AProjectile::OnMeshOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Projectile sasai kudasai %s, collided with component %s"), *OtherActor->GetName(), *OverlappedComp->GetName());
+
+	AActor* owner = GetOwner();
+	AActor* ownerByOwner = owner != nullptr ? owner->GetOwner() : nullptr;
+
+	if (OtherActor != owner && OtherActor != ownerByOwner)
+	{
+		IDamageTaker* DamageTakerActor = Cast<IDamageTaker>(OtherActor);
+		if (DamageTakerActor)
+		{
+			FDamageData damageData;
+			damageData.DamageValue = Damage;
+			damageData.Instigator = owner;
+			damageData.DamageMaker = this;
+		}
+		else
+		{
+			OtherActor->Destroy();
+		}
+		Destroy();
+	}
 
 	OtherActor->Destroy();
 	Destroy();
