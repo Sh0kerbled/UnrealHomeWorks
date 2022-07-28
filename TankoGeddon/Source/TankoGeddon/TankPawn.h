@@ -4,18 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "TankController.h"
-#include <Components\ArrowComponent.h>
-#include <Components/BoxComponent.h>
-#include "DamageTaker.h"
 #include "GameStruct.h"
-#include "HealthComponent.h"
+#include "DamageTaker.h"
+#include "MachinePawn.h"
 #include "TankPawn.generated.h"
 
 class ACannon;
 class UStaticMeshComponent;
 UCLASS()
-class TANKOGEDDON_API ATankPawn : public APawn
+class TANKOGEDDON_API ATankPawn : public AMachinePawn
 {
 	GENERATED_BODY()
 
@@ -42,10 +39,22 @@ public:
 
 	virtual void BeginPlay() override;
 
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-		UStaticMeshComponent* BodyMesh;
+	UFUNCTION()
+	TArray<FVector> GetPatrollingPoints() { return PattrollingPoints; }
 
+	UFUNCTION()
+		float GetAccurency() { return MovementAccurency; }
+
+	UFUNCTION()
+	FVector GetTurretForwardVector();
+
+	UFUNCTION()
+	void RotateTurretTo(FVector TargetPoition);
+
+	UFUNCTION()
+	FVector GetEyesPosition();
+
+protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		class USpringArmComponent* SpringArm;
 
@@ -53,22 +62,10 @@ protected:
 		class UCameraComponent* Camera;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret | Component")
-	TSubclassOf<ACannon> CannonClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret | Component")
-	TSubclassOf<ACannon> CannonClassTwo;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret | Component")
-	class UArrowComponent* CannonSetupPoint;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HitBox")
-	class UBoxComponent* BoxComponent;
-
-	UPROPERTY()
-	ACannon* Cannon;
+		TSubclassOf<ACannon> CannonClassTwo;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
-		float RotationSpeed = 30.0f;
+		float RotationSpeed = 100.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 		float InterpoLatoinKey = 0.5f;
@@ -81,6 +78,15 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float MoveSpeed = 30.0f;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Movement")
+	float MoveSpeed2 = 30.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI | Components", Meta = (MakeEditWidget = true))
+	TArray<FVector> PattrollingPoints;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI | Components")
+	float MovementAccurency = 30.0f;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "dvizh")
 	float TargetAxisValue = 0.0f;

@@ -6,6 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "GameStruct.h"
 #include <Components\ArrowComponent.h>
+#include "Camera/CameraShake.h"
+#include "Components/AudioComponent.h"
+#include "GameFramework/Actor.h"
+#include "GameFramework/ForceFeedbackEffect.h"
+#include "Particles/ParticleSystemComponent.h"
+#include <../Plugins/Cameras/GameplayCameras/Source/GameplayCameras/Public/MatineeCameraShake.h>
 #include "Cannon.generated.h"
 
 UCLASS()
@@ -46,6 +52,21 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunAmmo")
 	float FireRange = 100.0f;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UParticleSystemComponent* ShootEffect;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UParticleSystemComponent* HitEffect;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UParticleSystemComponent* DestroyEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	UForceFeedbackEffect* ShootForceEffect;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Effects")
+	TSubclassOf<UMatineeCameraShake> ShootShake;
+
 
 	FTimerHandle ReloadTimer;
 	FTimerHandle BurstTimer;

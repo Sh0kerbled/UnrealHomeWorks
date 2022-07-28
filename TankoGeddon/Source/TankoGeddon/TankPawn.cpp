@@ -10,14 +10,13 @@
 #include "Cannon.h"
 #include "Components\ArrowComponent.h"
 #include "HealthComponent.h"
-#include "Engine\TargetPoint.h"
+#include "Kismet\KismetMathLibrary.h"
+#include <cmath>
+#include <Math/UnrealMathUtility.h>
 
 ATankPawn::ATankPawn()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMesh"));
-	RootComponent = BodyMesh;
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(BodyMesh);
@@ -75,15 +74,14 @@ void ATankPawn::Tick(float DeltaSeconds)
 	FRotator CurrentRotation = GetActorRotation();
 
 	YawRotation = CurrentRotation.Yaw + YawRotation;
-	//YawRotation += CurrentRotation.Yaw;
 
 	FRotator newRotation = FRotator(0.0f, YawRotation, 0.0f);
 	SetActorRotation(newRotation);
 
-	//Turret Rotation
 	if (TankController)
 	{
 		FVector MousePos = TankController->GetMousePosition();
+		RotateTurretTo(MousePos);
 	}
 }
 
@@ -94,6 +92,27 @@ void ATankPawn::BeginPlay()
 	TankController = Cast<ATankController>(GetController());
 
 	SetupCannon(CannonClass);
+}
+
+FVector ATankPawn::GetTurretForwardVector()
+{
+	return TurretMesh->GetForwardVector();
+}
+
+void ATankPawn::RotateTurretTo(FVector TargetPosition)
+{
+	FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetPosition);
+	FRotator TurretRotation = TurretMesh->GetComponentRotation();
+
+	targetRotation.Pitch = TurretRotation.Pitch;
+	targetRotation.Roll = TurretRotation.Roll;
+
+	TurretMesh->SetWorldRotation(FMath::Lerp(TurretRotation, targetRotation, TurretRotationInterpolationKey));
+}
+
+FVector ATankPawn::GetEyesPosition()
+{
+	return CannonSetupPoint->GetComponentLocation();
 }
 
 void ATankPawn::SetupCannon(TSubclassOf<ACannon> newCannonClass)

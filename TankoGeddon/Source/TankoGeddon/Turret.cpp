@@ -2,13 +2,13 @@
 
 
 #include "Turret.h"
-#include <Components/StaticMeshComponent.h>
-#include <Components/ArrowComponent.h>
-#include <Components/BoxComponent.h>
+#include "Components\StaticMeshComponent.h"
+#include "Components\ArrowComponent.h"
+#include "Components\BoxComponent.h"
 #include "Cannon.h"
 #include "Kismet\KismetMathLibrary.h"
-#include <UObject/UObjectGlobals.h>
-#include <Engine/StaticMesh.h>
+#include "UObject\UObjectGlobals.h"
+#include "Engine\StaticMesh.h"
 #include "HealthComponent.h"
 
 
@@ -16,18 +16,6 @@
 ATurret::ATurret()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
-	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMesh"));
-	RootComponent = BodyMesh;
-
-	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
-	TurretMesh->SetupAttachment(BodyMesh);
-
-	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("CannonSeupPoint"));
-	CannonSetupPoint->SetupAttachment(TurretMesh);
-
-	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
-	BoxComponent->SetupAttachment(BodyMesh);
 
 	UStaticMesh* BodyMeshTemp = LoadObject<UStaticMesh>(this, *BodyMeshParth);
 	if (BodyMeshTemp)
@@ -41,8 +29,6 @@ ATurret::ATurret()
 void ATurret::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	SetupCannon();
 
 	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 
@@ -50,22 +36,17 @@ void ATurret::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(TargetingTimer, this, &ATurret::Targeting, TargetingRate, true, TargetingRate);
 }
 
-void ATurret::Destroyed()
-{
-	if (Cannon)
-		Cannon->Destroy();
-}
 
 void ATurret::Targeting()
 {
 	if (IsPlayerInRange())
 	{
 		RotateToPlayer();
-	}
 
-	if (CanFire() && Cannon && Cannon->IsReadyToFire())
-	{
-		Fire();
+		if (CanFire() && Cannon && Cannon->IsReadyToFire())
+		{
+			Fire();
+		}
 	}
 }
 
@@ -91,25 +72,6 @@ bool ATurret::CanFire()
 
 	float aimAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(targetingDir, dirToPlayer)));
 	return aimAngle <= Accurency;
-}
-
-void ATurret::Fire()
-{
-	if (Cannon)
-		Cannon->Fire();
-}
-
-void ATurret::SetupCannon()
-{
-	if (!CannonClass)
-	{
-		return;
-	}
-
-	FActorSpawnParameters params;
-	params.Owner = this;
-	Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, params);
-	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
 

@@ -2,6 +2,7 @@
 
 
 #include "MachinePawn.h"
+#include "TankPawn.h"
 #include "Components\StaticMeshComponent.h"
 #include "Components\ArrowComponent.h"
 #include "Components\BoxComponent.h"

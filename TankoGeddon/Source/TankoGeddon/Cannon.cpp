@@ -5,6 +5,7 @@
 #include "Components\ArrowComponent.h"
 #include "Components\StaticMeshComponent.h"
 #include "Projectile.h"
+#include <GameFramework/ForceFeedbackEffect.h>
 
 // Sets default values
 ACannon::ACannon()
@@ -19,6 +20,9 @@ ACannon::ACannon()
 
 	ProjectileSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("ProjectileSpawnPoint"));
 	ProjectileSpawnPoint->SetupAttachment(CannonSceneComponent);
+
+	ShootEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ShootEffect"));
+	ShootEffect->SetupAttachment(ProjectileSpawnPoint);
 }
 
 void ACannon::Fire()
@@ -30,6 +34,24 @@ void ACannon::Fire()
 
 	bCanFire = false;
 	Nuclei--;
+	ShootEffect->ActivateSystem();
+
+	if (GetOwner() && GetOwner() == GetWorld()->GetFirstPlayerController()->GetPawn())
+	{
+		if (ShootForceEffect)
+		{
+			FForceFeedbackParameters shootForceEffectParams;
+			shootForceEffectParams.bLooping = false;
+			shootForceEffectParams.Tag = "shootForceEffectParams";
+			GetWorld()->GetFirstPlayerController()->ClientPlayForceFeedback(ShootForceEffect,
+				shootForceEffectParams);
+		}
+		if (ShootShake)
+		{
+			GetWorld()->GetFirstPlayerController()->ClientPlayCameraShake(ShootShake);
+		}
+	}
+
 
 	if (CannonType == ECannonType::FireProjectile)
 	{
@@ -115,6 +137,5 @@ void ACannon::DStroy()
 	}
 
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &ACannon::Reload, ReloadTime, false);
-}
-
+} 
 
