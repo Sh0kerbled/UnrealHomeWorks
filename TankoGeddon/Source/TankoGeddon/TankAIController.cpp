@@ -10,22 +10,18 @@ void ATankAIController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TankPawn = Cast<ATankPawn>(GetPawn());
-	PlayerPawn->GetWorld()->GetFirstPlayerController()->GetPawn();
-
-	FVector pawnLocation = TankPawn->GetActorLocation();
-	MovementAccurency = TankPawn->GetAccurency();
-	TArray<FVector> points = TankPawn->GetPatrollingPoints();
-	for(FVector point : points)
-	{
-		PatrollingPath.Add(point + pawnLocation);
-	}
-	CurrentPattrollingIndex = 0;
+	Initialize();
 }
 
 void ATankAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	if (!TankPawn)
+		Initialize();
+
+	if (!TankPawn)
+		return;
 
 	TankPawn->MoveForward(1);
 
@@ -37,14 +33,16 @@ void ATankAIController::Tick(float DeltaSeconds)
 
 float ATankAIController::GetRotationValue()
 {
-	FVector currentPoint = PatrollingPath[CurrentPattrollingIndex];
+	FVector currentPoint = PattrollingPath[CurrentPattrolingIndex];
 	FVector pawnLocation = TankPawn->GetActorLocation();
-	if (FVector::Distance(currentPoint, pawnLocation) <= MovementAccurency)
+	float Dist = FVector::Distance(currentPoint, pawnLocation);
+	//UE_LOG(LogTemp, Warning, TEXT("Dist is %f"), Dist);
+	if (Dist <= MovementAccurency)
 	{
-		CurrentPattrollingIndex++;
-		if (CurrentPattrollingIndex >= PatrollingPath.Num())
+		CurrentPattrolingIndex++;
+		if (CurrentPattrolingIndex >= PattrollingPath.Num())
 		{
-			CurrentPattrollingIndex = 0;
+			CurrentPattrolingIndex = 0;
 		}
 	}
 
@@ -57,16 +55,15 @@ float ATankAIController::GetRotationValue()
 
 	float forwardAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(forwardDirection, moveDirection)));
 	float RightAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(rightDirection, moveDirection)));
+	//UE_LOG(LogTemp, Warning, TEXT("forward Angle: %f, RightAngle: %f"), forwardAngle, RightAngle);
 
-	float RotationValue = 0;
-	if (forwardAngle > 5)
-	{
-		RotationValue = 1;
-	}
+	float RotationValue = 1;
+
 	if (RightAngle > 90)
 	{
 		RotationValue = -RotationValue;
 	}
+
 	return RotationValue;
 }
 
@@ -86,7 +83,7 @@ void ATankAIController::RotateToPlayer()
 
 bool ATankAIController::IsPlayerRange()
 {
-	return FVector::Distance(TankPawn->GetActorLocation(), TankPawn->GetActorLocation()) <= TargetingRange;
+	return FVector::Distance(TankPawn->GetActorLocation(), PlayerPawn->GetActorLocation()) <= TargetingRange;
 }
 
 bool ATankAIController::CanFire()
@@ -128,7 +125,25 @@ bool ATankAIController::IsPlayerSeen()
 			return hitResult.GetActor() == PlayerPawn;
 		}
 	}
-	DrawDebugLine(GetWorld(), eyesPos, playerPos, FColor::Cyan, false, 0.5f, 0, 10);
+	DrawDebugLine(GetWorld(), eyesPos, playerPos, FColor::Purple, false, 0.5f, 0, 10);
 	return false;
+}
+
+void ATankAIController::Initialize()
+{
+	TankPawn = Cast<ATankPawn>(GetPawn());
+
+	if (!TankPawn)
+		return;
+	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+	FVector pawnLocation = TankPawn->GetActorLocation();
+	MovementAccurency = TankPawn->GetAccurency();
+	TArray<FVector> points = TankPawn->GetPatrollingPoints();
+	for (FVector point : points)
+	{
+		PattrollingPath.Add(point);
+	}
+	CurrentPattrolingIndex = 0;
 }
 

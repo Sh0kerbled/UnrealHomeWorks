@@ -7,10 +7,12 @@
 #include "GameStruct.h"
 #include "DamageTaker.h"
 #include "MachinePawn.h"
+#include <Engine/TargetPoint.h>
 #include "TankPawn.generated.h"
 
 class ACannon;
 class UStaticMeshComponent;
+class ATargetPoint;
 UCLASS()
 class TANKOGEDDON_API ATankPawn : public AMachinePawn
 {
@@ -40,7 +42,9 @@ public:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	TArray<FVector> GetPatrollingPoints() { return PattrollingPoints; }
+	TArray<FVector> GetPatrollingPoints();
+
+	void SetPatrollingPoints(TArray<ATargetPoint*> NewPatrollingPoints);
 
 	UFUNCTION()
 		float GetAccurency() { return MovementAccurency; }
@@ -83,7 +87,7 @@ protected:
 	float MoveSpeed2 = 30.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI | Components", Meta = (MakeEditWidget = true))
-	TArray<FVector> PattrollingPoints;
+	TArray<ATargetPoint*> PatrollingPoints;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI | Components")
 	float MovementAccurency = 30.0f;

@@ -10,9 +10,7 @@
 #include "Cannon.h"
 #include "Components\ArrowComponent.h"
 #include "HealthComponent.h"
-#include "Kismet\KismetMathLibrary.h"
-#include <cmath>
-#include <Math/UnrealMathUtility.h>
+#include "Engine\TargetPoint.h"
 
 ATankPawn::ATankPawn()
 {
@@ -92,6 +90,21 @@ void ATankPawn::BeginPlay()
 	TankController = Cast<ATankController>(GetController());
 
 	SetupCannon(CannonClass);
+}
+
+TArray<FVector> ATankPawn::GetPatrollingPoints()
+{
+	TArray<FVector> points;
+	for (ATargetPoint* point : PatrollingPoints)
+	{
+		points.Add(point->GetActorLocation());
+	}
+	return points;
+}
+
+void ATankPawn::SetPatrollingPoints(TArray<ATargetPoint*> NewPatrollingPoints)
+{
+	PatrollingPoints = NewPatrollingPoints;
 }
 
 FVector ATankPawn::GetTurretForwardVector()

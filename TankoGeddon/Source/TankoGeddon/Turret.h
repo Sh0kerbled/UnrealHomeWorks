@@ -7,28 +7,27 @@
 #include "DamageTaker.h"
 #include "GameStruct.h"
 #include "MachinePawn.h"
+#include "HealthComponent.h"
 #include "Turret.generated.h"
 
-UStaticMeshComponent;
-ACannon;
-
+class UStaticMeshComponent;
+class ACannon;
 UCLASS()
 class TANKOGEDDON_API ATurret : public AMachinePawn
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ATurret();
 
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void PostInitializeComponents() override;
+
 	void Targeting();
-
 	void RotateToPlayer();
-
 	bool IsPlayerInRange();
-
 	bool CanFire();
 
 	UPROPERTY()
@@ -46,7 +45,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Targeting")
 		float Accurency = 30.0f;
 
-	const FString BodyMeshParth = "StaticMesh'/Game/CSC/Meshes/SM_CSC_Tower1.SM_CSC_Tower1'";
+	const FString BodyMeshPath = "StaticMesh'/Game/CSC/Meshes/SM_CSC_Tower1.SM_CSC_Tower1'";
 
-	const FString TurretMeshParth = "StaticMesh'/Game/CSC/Meshes/SM_CSC_Gun1.SM_CSC_Gun1'";
+	const FString TurretMeshPath = "StaticMesh'/Game/CSC/Meshes/SM_CSC_Gun1.SM_CSC_Gun1'";
 };

@@ -6,6 +6,10 @@
 #include "Components\StaticMeshComponent.h"
 #include "Projectile.h"
 #include <GameFramework/ForceFeedbackEffect.h>
+#include "Particles\ParticleSystemComponent.h"
+#include "GameFramework/ForceFeedbackEffect.h"
+#include "Components\AudioComponent.h"
+#include "Camera\CameraShakeBase.h"
 
 // Sets default values
 ACannon::ACannon()
@@ -23,6 +27,8 @@ ACannon::ACannon()
 
 	ShootEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ShootEffect"));
 	ShootEffect->SetupAttachment(ProjectileSpawnPoint);
+
+	AudioEffect = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioEffect"));
 }
 
 void ACannon::Fire()
@@ -35,17 +41,10 @@ void ACannon::Fire()
 	bCanFire = false;
 	Nuclei--;
 	ShootEffect->ActivateSystem();
+	AudioEffect->Play();
 
 	if (GetOwner() && GetOwner() == GetWorld()->GetFirstPlayerController()->GetPawn())
 	{
-		if (ShootForceEffect)
-		{
-			FForceFeedbackParameters shootForceEffectParams;
-			shootForceEffectParams.bLooping = false;
-			shootForceEffectParams.Tag = "shootForceEffectParams";
-			GetWorld()->GetFirstPlayerController()->ClientPlayForceFeedback(ShootForceEffect,
-				shootForceEffectParams);
-		}
 		if (ShootShake)
 		{
 			GetWorld()->GetFirstPlayerController()->ClientPlayCameraShake(ShootShake);

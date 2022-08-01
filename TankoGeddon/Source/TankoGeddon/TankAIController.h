@@ -16,26 +16,27 @@ class TANKOGEDDON_API ATankAIController : public AAIController
 
 protected:
 	UPROPERTY()
-	class ATankPawn* TankPawn;
+		class ATankPawn* TankPawn;
+
 	UPROPERTY()
-	class APawn* PlayerPawn;
+		class APawn* PlayerPawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI | Movement")
-	TArray<FVector> PatrollingPath;
+		TArray<FVector> PattrollingPath;
 
-	int32 CurrentPattrollingIndex = 0;
+	int32 CurrentPattrolingIndex = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI | Movement")
-	float MovementAccurency;
+		float MovementAccurency;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI | Targeting")
-	float TargetingRange = 1000.0f;
+		float TargetingRange = 1000.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI | Movement")
-	float TargetingRate = 0.1f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI | Targeting")
+		float TargetingSpeed = 0.1f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI | Movement")
-	float Accurency = 10.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI | Targeting")
+		float Accurency = 10.0f;
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -48,4 +49,6 @@ protected:
 	void Fire();
 
 	bool IsPlayerSeen();
+
+	void Initialize();
 };

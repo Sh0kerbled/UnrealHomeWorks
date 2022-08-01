@@ -37,7 +37,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 		class UBoxComponent* BoxComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 		class UArrowComponent* CannonSetupPoint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
