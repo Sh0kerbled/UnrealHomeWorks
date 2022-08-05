@@ -45,14 +45,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	class UArrowComponent* TankSpawnPoint;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	class UArrowComponent* TankFactorySpawnPoint;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnParametres")
 	TSubclassOf<class ATankPawn> SpawnTankClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnParametres")
-	TSubclassOf<class ATankFactory> SpawnTankFactoryClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	float SpawnTankRate = 2.0f;

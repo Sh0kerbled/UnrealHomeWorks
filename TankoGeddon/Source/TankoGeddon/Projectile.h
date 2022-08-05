@@ -14,7 +14,11 @@ class TANKOGEDDON_API AProjectile : public AActor
 public:	
 	AProjectile();
 
-	void Start();
+	virtual void Start();
+
+	void Addforce();
+
+	void Reload();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,Category= "Components")
@@ -29,9 +33,24 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	float Damage = 10.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	float PushForce = 1000.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Damage")
+	float Force = 500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	float MortarNucleis = 5.0f;
+
 	FTimerHandle MoveTimer;
 
-	void Move();
+	UFUNCTION()
+	virtual void Move();
+
+public:
+	bool CanItFire = true;
+
+	int32 NoMortar = 0;
 
 	UFUNCTION()
 	void OnMeshOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

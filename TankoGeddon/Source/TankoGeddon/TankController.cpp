@@ -14,6 +14,8 @@ void ATankController::SetupInputComponent()
 	InputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ATankController::Fire);
 	InputComponent->BindAction("FireSpecial", EInputEvent::IE_Pressed, this, &ATankController::FireSpecial);
 	InputComponent->BindAction("ChangeGun", EInputEvent::IE_Pressed, this, &ATankController::ChangeGun);
+	InputComponent->BindAction("ZoomIn", IE_Pressed, this, &AMachinePawn::CameraZoomIn);
+	InputComponent->BindAction("ZoomOut", IE_Pressed, this, &AMachinePawn::CameraZoomOut);
 }
 
 void ATankController::Tick(float DeltaSeconds)

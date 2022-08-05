@@ -70,6 +70,38 @@ void AMachinePawn::BeginPlay()
 	SetupCannon(CannonClass);
 }
 
+void AMachinePawn::CameraZoomIn()
+{
+	float a = 25.0;
+	CameraZoom_v = CameraZoom_v - 25.0;
+
+	if (CameraZoom_v <= 75.0)
+	{
+		CameraZoom_v->TargetArmLength = 75.0;
+		CameraZoom_v = 75.0;
+	}
+	else
+	{
+		CameraZoom_v->TargetArmLength = CameraZoom_v;
+	}
+}
+
+void AMachinePawn::CameraZoomOut()
+{
+	float a = 25.0;
+	CameraZoom_v = CameraZoom_v + 25.0;
+
+	if (CameraZoom_v >= 300.0)
+	{
+		CameraBoom_v->TargetArmLength = 300.0;
+		CameraZoom_v = 300.0;
+	}
+	else
+	{
+		CameraBoom_v->TargetArmLength = CameraZoom_v;
+	}
+}
+
 void AMachinePawn::Die()
 {
 	if (Cannon)

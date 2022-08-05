@@ -70,12 +70,6 @@ void ATankFactory::Die()
 		MapLoader->SetIsActivated(false);
 	}
 	Destroy();
-
-	if (BuildingMesh)
-	{
-		FTransform spawnFactoryTransform(TankFactorySpawnPoint->GetComponentRotation(), TankFactorySpawnPoint->GetComponentLocation(), FVector(1));
-		ATankFactory* newTankFactory = GetWorld()->SpawnActor<ATankFactory>(SpawnTankClass, spawnFactoryTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	}
 }
 
 void ATankFactory::DamageTaked(float DamageValue)
